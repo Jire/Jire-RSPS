@@ -1,5 +1,7 @@
 package jire.player;
 
-public class Player {
+import jire.world.Entity;
+
+public class Player extends Entity {
 
 }

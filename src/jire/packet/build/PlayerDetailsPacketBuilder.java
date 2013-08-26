@@ -17,7 +17,7 @@ public final class PlayerDetailsPacketBuilder implements PacketBuilder {
 		PlayerDetailsPacket packet = (PlayerDetailsPacket) packetRep;
 
 		OutputPacketBuffer output = new OutputPacketBuffer(1 + 2);
-		output.writeBoolean(packet.isMember());
+		output.write(1 + 128);
 		output.writeShort(packet.getIndex(), ValueType.A, ByteOrder.LITTLE);
 
 		return new Packet(249, output.array());

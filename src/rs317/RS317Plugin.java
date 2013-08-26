@@ -31,7 +31,7 @@ public final class RS317Plugin extends AbstractPlugin implements EventListener {
 			rep = HandshakeResponsePacket.get(0, 0);
 			break;
 		case 16:
-			rep = LoginResponsePacket.get(2, 0, true);
+			rep = LoginResponsePacket.get(2, 0, false);
 			break;
 		default:
 			return;

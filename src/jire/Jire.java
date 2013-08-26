@@ -18,9 +18,13 @@ import jire.packet.parse.HandshakePacketParser;
 import jire.packet.parse.IdleLogoutPacketParser;
 import jire.packet.parse.LoginPacketParser;
 import jire.packet.parse.PingPacketParser;
+import jire.packet.represent.LoginPacket;
 import jire.packet.represent.LoginResponsePacket;
+import jire.packet.represent.MapRegionPacket;
 import jire.packet.represent.MessagePacket;
 import jire.packet.represent.PlayerDetailsPacket;
+import jire.world.Position;
+import net.burtleburtle.bob.rand.ISAACAlgorithm;
 
 public final class Jire implements EventListener {
 
@@ -54,6 +58,19 @@ public final class Jire implements EventListener {
 	public void onPacketParse(PacketParseEvent event) {
 		environment.getLogger().debug(
 				"Parsed packet: " + event.getPacket().getID());
+		if (event.getPacketRepresentation() instanceof LoginPacket) {
+			LoginPacket packet = (LoginPacket) event.getPacketRepresentation();
+			event.getClient()
+					.getServer()
+					.getPacketTranslator()
+					.setEncodeCipher(
+							new ISAACAlgorithm(packet.getSessionKeys()));
+			int[] decodeKeys = packet.getSessionKeys();
+			for (int i = 0; i < decodeKeys.length; i++)
+				decodeKeys[i] += 50;
+			event.getClient().getServer().getPacketTranslator()
+					.setDecodeCipher(new ISAACAlgorithm(decodeKeys));
+		}
 	}
 
 	@EventHandler(priority = EventPriority.LOWEST)
@@ -62,23 +79,10 @@ public final class Jire implements EventListener {
 				"Built packet: " + event.getPacket().getID() + "/"
 						+ event.getPacketRepresentation().getClass().getName());
 		if (event.getPacketRepresentation() instanceof LoginResponsePacket) {
-			new Thread() {
-				@Override
-				public void run() {
-					try {
-						Thread.sleep(300);
-					} catch (InterruptedException e) {
-						return;
-					}
-/*					event.getClient().write(PlayerDetailsPacket.get(0, true));*/
-/*					event.getClient().write(
-							MessagePacket.get("Welcome to Jire."));*/
-				}
-			}.start();
-			/*
-			 * event.getClient().write(
-			 * MapRegionPacket.get(Position.create(3222, 3222)));
-			 */
+			event.getClient().write(PlayerDetailsPacket.get(0, true));
+			event.getClient().write(
+					MapRegionPacket.get(Position.create(3222, 3222)));
+			event.getClient().write(MessagePacket.get("Welcome to Jire."));
 		}
 	}
 

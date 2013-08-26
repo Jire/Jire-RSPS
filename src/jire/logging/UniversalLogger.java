@@ -9,7 +9,7 @@ public class UniversalLogger extends AbstractLogger {
 	private static final DateFormat DATE_FORMAT = new SimpleDateFormat(
 			"MM-dd-yyyy");
 	private static final DateFormat DATE_TIME_FORMAT = new SimpleDateFormat(
-			"MM-dd-yyyy HH:mm:ss aa");// "MM-dd-yyyy HH:mm:ss aa"
+			"MM-dd-yyyy hh:mm:ss aa");
 	private static final DateFormat TIME_FORMAT = new SimpleDateFormat(
 			"HH:mm:ss aa");
 

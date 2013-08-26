@@ -269,4 +269,8 @@ public final class InputPacketBuffer extends PacketBuffer {
 		return data;
 	}
 
+	public int limit() {
+		return getBacking().limit();
+	}
+
 }
