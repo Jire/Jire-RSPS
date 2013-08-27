@@ -30,14 +30,6 @@ public final class OutputPacketBuffer extends PacketBuffer {
 		}
 	}
 
-	public void finishVariablePacketHeader() {
-		getBacking().put(0, (byte) (getBacking().position() - 1));
-	}
-
-	public void finishVariableShortPacketHeader() {
-		getBacking().putShort(0, (short) (getBacking().position() - 2));
-	}
-
 	public void writeBytes(ByteBuffer from) {
 		for (int i = 0; i < from.position(); i++) {
 			writeByte(from.get(i));
