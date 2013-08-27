@@ -70,7 +70,7 @@ public abstract class PacketBuffer {
 		this.backing = backing;
 	}
 
-	protected final void setAccessType(AccessType accessType) {
+	public final void setAccessType(AccessType accessType) {
 		this.accessType = accessType;
 		switchAccessType(accessType);
 	}
