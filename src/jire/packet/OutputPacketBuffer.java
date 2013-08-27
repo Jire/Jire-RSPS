@@ -25,9 +25,9 @@ public final class OutputPacketBuffer extends PacketBuffer {
 		case BYTE_ACCESS:
 			getBacking().position((getBitPosition() + 7) / 8);
 			break;
+		default:
+			throw new UnsupportedOperationException("Unexpected access type: " + type);
 		}
-		throw new UnsupportedOperationException("Unexpected access type: "
-				+ type);
 	}
 
 	public void finishVariablePacketHeader() {
