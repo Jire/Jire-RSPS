@@ -14,28 +14,31 @@ import jire.packet.build.LoginResponseBuilder;
 import jire.packet.build.MapRegionBuilder;
 import jire.packet.build.MessagePacketBuilder;
 import jire.packet.build.PlayerDetailsPacketBuilder;
+import jire.packet.build.PlayerUpdatePacketBuilder;
 import jire.packet.parse.HandshakePacketParser;
 import jire.packet.parse.IdleLogoutPacketParser;
 import jire.packet.parse.LoginPacketParser;
 import jire.packet.parse.PingPacketParser;
-import jire.packet.represent.LoginPacket;
+import jire.packet.parse.WalkPacketParser;
 import jire.packet.represent.LoginResponsePacket;
 import jire.packet.represent.MapRegionPacket;
 import jire.packet.represent.MessagePacket;
 import jire.packet.represent.PlayerDetailsPacket;
+import jire.packet.represent.PlayerUpdatePacket;
+import jire.player.Player;
 import jire.world.Position;
-import net.burtleburtle.bob.rand.ISAACAlgorithm;
 
 public final class Jire implements EventListener {
 
 	private static final PacketBuilder[] builders = {
 			new HandshakeResponseBuilder(), new LoginResponseBuilder(),
 			new PlayerDetailsPacketBuilder(), new MapRegionBuilder(),
-			new MessagePacketBuilder() };
+			new MessagePacketBuilder(), new PlayerUpdatePacketBuilder() };
 
 	private static final PacketParser[] parsers = {
 			new HandshakePacketParser(), new LoginPacketParser(),
-			new PingPacketParser(), new IdleLogoutPacketParser() };
+			new PingPacketParser(), new IdleLogoutPacketParser(),
+			new WalkPacketParser() };
 
 	public static void main(String[] args) {
 		for (PacketBuilder builder : builders)
@@ -58,18 +61,11 @@ public final class Jire implements EventListener {
 	public void onPacketParse(PacketParseEvent event) {
 		environment.getLogger().debug(
 				"Parsed packet: " + event.getPacket().getID());
-		if (event.getPacketRepresentation() instanceof LoginPacket) {
-			LoginPacket packet = (LoginPacket) event.getPacketRepresentation();
-			event.getClient()
-					.getServer()
-					.getPacketTranslator()
-					.setEncodeCipher(
-							new ISAACAlgorithm(packet.getSessionKeys()));
-			int[] decodeKeys = packet.getSessionKeys();
-			for (int i = 0; i < decodeKeys.length; i++)
-				decodeKeys[i] += 50;
-			event.getClient().getServer().getPacketTranslator()
-					.setDecodeCipher(new ISAACAlgorithm(decodeKeys));
+		if (event.getPacket().getID() == 0) {
+			Player player = new Player(event.getClient().getUUID(), 1, "Jire",
+					"jire", 2);
+			player.setPosition(Position.create(3222, 3222));
+			event.getClient().write(PlayerUpdatePacket.get(player));
 		}
 	}
 

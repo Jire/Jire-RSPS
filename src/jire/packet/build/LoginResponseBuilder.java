@@ -1,9 +1,9 @@
 package jire.packet.build;
 
-import jire.packet.OutputPacketBuffer;
 import jire.packet.Packet;
 import jire.packet.PacketBuilder;
 import jire.packet.PacketRepresentation;
+import jire.packet.RSOutputStream;
 import jire.packet.reflective.BuildsPacket;
 import jire.packet.represent.LoginResponsePacket;
 
@@ -14,14 +14,14 @@ public final class LoginResponseBuilder implements PacketBuilder {
 	public Packet build(PacketRepresentation packetRep) {
 		LoginResponsePacket packet = (LoginResponsePacket) packetRep;
 
-		OutputPacketBuffer output = new OutputPacketBuffer(1 + 1 + 1);
+		RSOutputStream output = new RSOutputStream(1 + 1 + 1);
 		output.write(packet.getResponseCode());
 		if (packet.getResponseCode() == 2) {
-			output.writeByte(packet.getCrownCode());
-			output.writeBoolean(packet.isFlagged());
+			output.write(packet.getCrownCode());
+			output.writeBit(packet.isFlagged());
 		}
 
-		return new Packet(output.array());
+		return new Packet(output.getData());
 	}
 
 }

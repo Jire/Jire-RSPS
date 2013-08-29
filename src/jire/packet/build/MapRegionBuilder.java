@@ -1,10 +1,9 @@
 package jire.packet.build;
 
-import jire.packet.OutputPacketBuffer;
 import jire.packet.Packet;
-import jire.packet.PacketBuffer.ValueType;
 import jire.packet.PacketBuilder;
 import jire.packet.PacketRepresentation;
+import jire.packet.RSOutputStream;
 import jire.packet.reflective.BuildsPacket;
 import jire.packet.represent.MapRegionPacket;
 
@@ -15,11 +14,11 @@ public final class MapRegionBuilder implements PacketBuilder {
 	public Packet build(PacketRepresentation packetRep) {
 		MapRegionPacket packet = (MapRegionPacket) packetRep;
 
-		OutputPacketBuffer output = new OutputPacketBuffer(2 + 2);
-		output.writeShort(packet.getPosition().getRegionX() + 6, ValueType.A);
+		RSOutputStream output = new RSOutputStream(2 + 2);
+		output.writeShortA(packet.getPosition().getRegionX() + 6);
 		output.writeShort(packet.getPosition().getRegionY() + 6);
 
-		return new Packet(73, output.array());
+		return new Packet(73, output.getData());
 	}
 
 }

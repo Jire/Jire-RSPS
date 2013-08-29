@@ -16,15 +16,19 @@ public final class OutputPacketBuffer extends PacketBuffer {
 		this(packet.getLength());
 	}
 
+	public OutputPacketBuffer() {
+		this((int) Math.pow(2, 24));
+	}
+
 	@Override
 	public final void switchAccessType(AccessType type) {
 		switch (type) {
 		case BIT_ACCESS:
 			setBitPosition(getBacking().position() * 8);
-			break;
+			return;
 		case BYTE_ACCESS:
 			getBacking().position((getBitPosition() + 7) / 8);
-			break;
+			return; //lold
 		}
 		throw new UnsupportedOperationException("Unexpected access type: "
 				+ type);
@@ -124,14 +128,17 @@ public final class OutputPacketBuffer extends PacketBuffer {
 	}
 
 	public void write(int value) {
-		writeByte((byte) (value & 0xFF));
+		writeByte((byte) value);
 	}
 
 	public void writeByte(int value) {
+		checkOverflow(1);
 		writeByte(value, ValueType.STANDARD);
 	}
 
 	public void writeBytes(byte[] values) {
+		System.out.println("Fat dickfaces " + values.length + ", " + getBacking().arrayOffset() + ", "  +getBacking().limit() + ", " + getBacking().capacity());
+		checkOverflow(values.length + 512);
 		getBacking().put(values);
 	}
 
@@ -263,6 +270,16 @@ public final class OutputPacketBuffer extends PacketBuffer {
 			writeByte(value);
 		}
 		write('\n');
+	}
+	
+	public void checkOverflow(int add) {
+		while (add + getBacking().arrayOffset() >= getBacking().limit()) {
+			int newSize = getBacking().arrayOffset() + add + 512;
+			
+			ByteBuffer new_ = ByteBuffer.allocate(newSize);
+			new_.put(getBacking());
+			setBacking(new_);
+		}
 	}
 
 }

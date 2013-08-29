@@ -1,8 +1,9 @@
 package jire.packet.represent;
 
+import jire.packet.PacketRepresentation;
 import jire.player.Player;
 
-public abstract class PlayerPacket {
+public abstract class PlayerPacket implements PacketRepresentation {
 
 	private final Player player;
 

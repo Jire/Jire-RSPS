@@ -1,11 +1,9 @@
 package jire.packet.build;
 
-import jire.packet.OutputPacketBuffer;
 import jire.packet.Packet;
-import jire.packet.PacketBuffer.ByteOrder;
-import jire.packet.PacketBuffer.ValueType;
 import jire.packet.PacketBuilder;
 import jire.packet.PacketRepresentation;
+import jire.packet.RSOutputStream;
 import jire.packet.reflective.BuildsPacket;
 import jire.packet.represent.PlayerDetailsPacket;
 
@@ -16,11 +14,11 @@ public final class PlayerDetailsPacketBuilder implements PacketBuilder {
 	public Packet build(PacketRepresentation packetRep) {
 		PlayerDetailsPacket packet = (PlayerDetailsPacket) packetRep;
 
-		OutputPacketBuffer output = new OutputPacketBuffer(1 + 2);
-		output.write(1 + 128);
-		output.writeShort(packet.getIndex(), ValueType.A, ByteOrder.LITTLE);
+		RSOutputStream output = new RSOutputStream(1 + 2);
+		output.writeByteA(packet.isMember() ? 1 : 0);
+		output.writeLEShortA(packet.getIndex());
 
-		return new Packet(249, output.array());
+		return new Packet(249, output.getData());
 	}
 
 }

@@ -1,14 +1,15 @@
 package jire.network.nio;
 
 import java.io.IOException;
+import java.nio.ByteBuffer;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.SocketChannel;
 
 import jire.network.AbstractClient;
 import jire.network.Server;
 import jire.packet.InputPacketBuffer;
-import jire.packet.OutputPacketBuffer;
 import jire.packet.Packet;
+import jire.packet.RSOutputStream;
 
 final class NIOClient extends AbstractClient {
 
@@ -28,7 +29,8 @@ final class NIOClient extends AbstractClient {
 	}
 
 	NIOClient(Server server, SelectionKey key, SocketChannel channel) {
-		this(server, key, channel, new InputPacketBuffer(new byte[DEFAULT_BUFFER_ALLOCATION]));
+		this(server, key, channel, new InputPacketBuffer(
+				new byte[DEFAULT_BUFFER_ALLOCATION]));
 	}
 
 	NIOClient(Server server, SelectionKey key) {
@@ -49,11 +51,13 @@ final class NIOClient extends AbstractClient {
 
 	@Override
 	public void write(Packet packet) {
-		OutputPacketBuffer buffer = getServer().getPacketTranslator().encode(packet);
-		buffer.flip();
+		RSOutputStream buffer = getServer().getPacketTranslator()
+				.encode(packet);
+		ByteBuffer send = ByteBuffer.wrap(buffer.getData());
+		//send.flip();
 
 		try {
-			channel.write(buffer.getBacking());
+			channel.write(send);
 		} catch (IOException e) {
 			disconnect();
 		}

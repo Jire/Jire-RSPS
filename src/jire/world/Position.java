@@ -35,6 +35,26 @@ public class Position {
 		return "(" + x + ", " + y + ", " + z + ")";
 	}
 
+	public Position transform(int diffX, int diffY, int diffZ) {
+		return Position.create(x + diffX, y + diffY, z + diffZ);
+	}
+
+	public int getLocalX(Position position) {
+		return x - 8 * position.getRegionX();
+	}
+
+	public int getLocalY(Position position) {
+		return y - 8 * position.getRegionY();
+	}
+
+	public int getLocalX() {
+		return getLocalX(this);
+	}
+
+	public int getLocalY() {
+		return getLocalY(this);
+	}
+
 	@Override
 	public boolean equals(Object o) {
 		if (!(o instanceof Position)) {

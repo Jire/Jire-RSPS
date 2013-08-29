@@ -1,8 +1,8 @@
 package rs317;
 
 import jire.packet.InputPacketBuffer;
-import jire.packet.OutputPacketBuffer;
 import jire.packet.Packet;
+import jire.packet.RSOutputStream;
 import jire.packet.translate.AbstractPacketTranslator;
 
 public final class RS317Translator extends AbstractPacketTranslator {
@@ -39,14 +39,11 @@ public final class RS317Translator extends AbstractPacketTranslator {
 	public static final int PACKET_SIZE_SHORT = -2;
 
 	@Override
-	public OutputPacketBuffer encode(Packet packet) {
-		OutputPacketBuffer buffer = new OutputPacketBuffer(
-				packet.getLength() + 3);
+	public RSOutputStream encode(Packet packet) {
+		RSOutputStream buffer = new RSOutputStream(packet.getLength() + 3);
 
 		if (!packet.isHeadless()) {
-			int id = getEncodeCipher() == null ? packet.getID() : packet
-					.getID() + getEncodeCipher().nextInt();
-			buffer.write(id);
+			buffer.write(packet.getID());
 
 			if (OUTGOING_PACKET_LENGTHS[packet.getID()] == PACKET_SIZE_BYTE) {
 				buffer.write(packet.getLength());
@@ -66,12 +63,6 @@ public final class RS317Translator extends AbstractPacketTranslator {
 			return null;
 
 		int id = buffer.read() & 0xFF;
-
-		// cipher will be null if the keys haven't yet been exchanged
-
-		if (getDecodeCipher() != null) {
-			id = id - getDecodeCipher().nextInt() & 0xFF;
-		}
 
 		int packetLength = getPacketLength(id, buffer);
 		if (buffer.remaining() < packetLength) {
